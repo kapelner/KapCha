@@ -1,0 +1,33 @@
+<h2>Welcome to the short survey!</h2>
+
+<div style="text-align:left;">
+  <h4>Directions</h4>
+
+  In this HIT, you will be asked to answer 30 questions.<br />  
+  <% if @s.treatment[:run] == :exhortation %>
+    <br />
+    Please take the time to carefully read the instructions for each question
+    and to give an accurate and honest answer. Your responses will be used for
+    academic research.<br />
+  <% elsif @s.treatment[:run] == :kapcha %>
+    <br />
+    The words from each question and the answer choices will appear one at a time.
+    This gives you time to read and answer each question. If you have not
+    finished reading by the time the full question has appeared, take as much time
+    as you need.<br />
+  <% elsif @s.treatment[:run] == :timing %>
+    <br />
+    For each question, the continue button will be disabled for a short time.
+    This gives you time to read and answer each question.<br />
+  <% else %>
+    
+  <% end %>  
+  <br />
+  Click to begin once you are ready.
+</div>
+<div style="margin:20px; text-align:center;">
+  <form action="/surveyor/read_directions" method="post">
+    <input type="hidden" name="id" value="<%= @s.id %>" />
+    <input type="submit" value=" Begin " />
+  </form>
+</div>

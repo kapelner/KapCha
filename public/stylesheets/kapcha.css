@@ -1,0 +1,109 @@
+/*
+The MIT License
+
+Copyright (c) 2010 Adam Kapelner and Dana Chandler
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+*/
+
+div#question_title {
+    font-size: 18px;
+    font-weight: bold;
+    padding: 10px;
+    text-align: center;
+}
+
+div#question_description {
+    font-size: 14px;
+    font-family: Times;
+    padding: 10px;
+}
+
+div#question_text {
+    font-size: 16px;
+    font-family: Verdana;
+    padding: 10px;
+    text-align: center;
+}
+
+div#question_responses {
+    padding: 10px;
+    text-align: center;
+}
+
+div#exhortation {
+    margin: 5px;
+    padding: 5px;
+    color: red;
+    font-size: 12px;
+    font-family: Verdana;
+    text-align: center;
+}
+
+td.response_1 {
+  background-color: rgb(0,80,0);
+  color: white;
+  /*font-size: 24px;*/
+}
+
+td.response_2 {
+  background-color: rgb(50,200,50);
+  /*font-size: 16px;*/
+}
+
+td.response_3 {
+  background-color: rgb(200,255,200);
+  /*font-size: 12px;*/
+}
+
+td.response_4 {
+  /*font-size: 10px;*/
+  background-color: rgb(255,255,255);
+  color: gray;
+}
+
+th.title_1 {
+  font-size: 32px;
+  color: white;
+  background-color: black;  
+}
+
+th.title_2 {
+  font-size: 20px;
+  color: white;
+  background-color: black;  
+}
+
+th.title_3 {
+  font-size: 16px;
+  color: white;
+  background-color: black;  
+}
+
+th.title_4 {
+  font-size: 12px;
+  color: white;
+  background-color: black;  
+}
+
+td.stat {
+  font-size: 24px;
+  color: white;
+  background-color: black;
+}

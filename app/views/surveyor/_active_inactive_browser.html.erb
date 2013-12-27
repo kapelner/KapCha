@@ -1,0 +1,26 @@
+<script type="text/javascript">
+  function onBlur() {
+    RecordFocusOrUnfocus('blurred');
+  };
+  function onFocus(){
+    RecordFocusOrUnfocus('focused');
+  };
+  if (/*@cc_on!@*/false) { // check for Internet Explorer
+    document.onfocusin = onFocus;
+    document.onfocusout = onBlur;
+  }
+  else {
+    window.onfocus = onFocus;
+    window.onblur = onBlur;
+  }
+
+  function RecordFocusOrUnfocus(status){
+    var r = new Ajax.Request(
+      '/surveyor/record_focus_or_unfocus',
+      {
+        method: 'post',
+        parameters: 'survey_id=<%= @s.id %>&status=' + status
+      }
+    );
+  }
+</script>

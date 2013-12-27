@@ -1,0 +1,3 @@
+<div id="header" style="text-align:right; margin-bottom:10px; <% unless Survey::ShowQuestionCounter %>display:none;<% end %>">
+  Question: <%= @s.num_questions_completed + 1 %> / <%= Survey::NumTotalQuestions %>
+</div>

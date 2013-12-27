@@ -1,0 +1,48 @@
+<div id="survey_body" style="text-align:left;">
+  <form action="/surveyor/one_question_answered" method="post" id="response_form">
+    <input type="hidden" name="survey_id" value="<%= @s.id %>" />
+    <input type="hidden" name="signature" id="question_signature" value="<%= @q[:signature] %>" />
+    <input type="hidden" name="responses" id="response_form_text" />
+  </form>
+  <%= render :partial => 'question_header' %>
+  <% if @q[:question_title] %>
+    <div id="question_title" style="color:<%= Survey::TitleColor.nil? ? Survey::TextColor : Survey::TitleColor%>;">
+      <span id="question_title_wrap"><%= @q[:question_title] %></span>
+    </div>
+  <% end %>
+  <% if @q[:question_description] %>
+    <div id="question_description">
+      <%= kapcha_tokenize(@q[:question_description], @use_kapcha) %>
+    </div>
+  <% end %>
+  <div id="question_text">
+    <%= kapcha_tokenize(@q[:question_text], @use_kapcha) %>
+  </div>
+  <div id="question_responses"><%= render :partial => "surveyor_responses/#{@q[:response_type]}_responses" %></div>
+  <script type="text/javascript">
+    var response_delimeter = '<%= Survey::ResponseDelimiter %>';
+    //handle the Oppenheimer et al, 2009 IMC check here:
+    <% if @q.equal?(Survey::Oppenheimer99IMC1) %>
+      $('question_title').onclick = function(){
+        $('response_form_text').value = 'pass';
+        $('response_form').submit();
+      };
+    <% end %>
+  </script>
+  <% unless Survey::QuestionTypesExemptFromKapCha.include?(@q[:question_type]) %>
+    <% if @s.exhortation? %>
+      <div id="exhortation">
+        Please answer accurately. Your responses will be used for research.
+      </div>
+    <% elsif @s.kapcha? %>
+      <script type="text/javascript">
+        var kapcha = new KapCha(<%= Survey::KapChaWordsPerMinute %>, '<%= Survey::TextColor %>');
+      </script>
+    <% elsif @s.timing_control? %>
+      <script type="text/javascript">
+        var timing = new Timing(<%= Survey::KapChaWordsPerMinute %>);
+      </script>
+    <% end %>
+  <% end %>
+  <%= render :partial => 'active_inactive_browser' %>
+</div>

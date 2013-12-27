@@ -1,0 +1,32 @@
+<div style="padding:10px;">
+  <table id="responses">
+    <tr id="response_1" style="display:none; height:20px;">
+      <td><image src="/images/1.gif" border="0" style="margin-bottom:-5px;" /></td>
+      <td><strong>This is REALLY me:</strong></td>
+      <td><span id="response_text_1" style="background-color:green; color:white;"></span></td>
+    </tr>
+    <tr id="response_2" style="display:none; height:20px;">
+      <td><image src="/images/2.gif" border="0" style="margin-bottom:-5px;" /></td>
+      <td><strong>This is somewhat me:</strong></td>
+      <td><span id="response_text_2" style="background-color:yellow;"></span></td>
+    </tr>
+    <tr id="response_3" style="display:none; height:20px;">
+      <td><image src="/images/3.gif" border="0" style="margin-bottom:-5px;" /></td>
+      <td><strong>This is not as much me:</strong>
+      <td><span id="response_text_3" style="background-color:gray;"></span></td>
+    </tr>
+    <tr id="response_4" style="display:none; height:20px;">
+      <td><image src="/images/4.gif" border="0" style="margin-bottom:-5px;" /></td>
+      <td><strong>This is the least bit me:</strong>
+      <td><span id="response_text_4" style="background-color:red; color:white;"></span></td>
+    </tr>
+  </table>
+  <br />
+  <input type="button" id="clear_responses_button" value=" Clear My Responses " style="display:none;" onclick="survey.clear_responses();">
+  <br /><br />
+  <span id="wait_spinner" style="display:none;">
+    <img src="/images/spinner.gif" width="20" height="20">
+  </span>
+  <br />
+  <input type="button" id="submit_button" value=" Submit " style="display:none;" onclick="survey.submit_form();">
+</div>

@@ -1,0 +1,9 @@
+<% unless @surveys.empty? %>
+  <%= link_to 'all', :treatment => nil %>
+  <%= link_to 'control', :treatment => 'control' %>
+  <%= link_to 'exhortation', :treatment => 'exhortation' %>
+  <%= link_to 'timing', :treatment => 'timing' %>
+  <%= link_to 'kapcha', :treatment => 'kapcha' %>
+  <%= render :partial => 'all_hits', :locals => {:surveys => @surveys} %>
+  <%= render :partial => 'email_workers' %>
+<% end %>

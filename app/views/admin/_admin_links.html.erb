@@ -1,0 +1,12 @@
+<%= link_to 'all HITs', {:action => :index}, {:target => '_blank'} %><br />
+<%= link_to 'investigate abandoned HITs', {:action => :investigate_attrition}, {:target => '_blank'} %><br />
+<%= link_to 'investigate buggy HITs (duplicate questions)', {:action => :buggy_hits}, {:target => '_blank'} %><br />
+<%= link_to 'completed HITs', {:action => :completed_hits}, {:target => '_blank'} %><br />
+<%= link_to 'dashboard', {:action => :dashboard}, {:target => '_blank'} %><br />
+<%= link_to 'comments page', {:action => :comments_page}, {:target => '_blank'} %><br />
+<%= link_to 'nuke database', :action => :nuke %><br />
+<%= link_to 'nuke Adam and Dana', :action => :nuke_adam_and_dana %><br />
+<%= link_to 'cleanup MTurk', :action => :cleanup_mturk %><br />
+<%= link_to 'version information', {:action => :versions}, {:target => '_blank'} %><br />
+<%= link_to 'data dump', {:action => :data_dump} %> <%= link_to '(coded)', {:action => :data_dump, :coded => true} %><br />
+<!--<%= link_to 'qu data dump', {:action => :qu_data_dump}, {:target => '_blank'} %><br />-->

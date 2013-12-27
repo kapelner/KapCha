@@ -1,0 +1,72 @@
+<div style="margin:5px; padding:5px; border: 1px solid black;">
+  <h3>All HITs (<%= surveys.length %>)</h3>
+  <table width="100%" cellspacing="0">
+    <tr>
+      <th align="center">ID</th>
+      <th align="center">Batch</th>
+      <th align="center">Ver #</th>
+      <th align="center">Locally</th>
+      <th align="center">MTurk Hit ID</th>
+      <th align="center">A/G</th>
+      <th align="center">Treatment</th>
+      <th align="center">Questions Done<br />(*compl)</th>
+      <th align="center">IMC</th>
+      <th align="center"># Window Switches</th>
+      <!--<th align="center">NfC mean (sd)</th>-->
+      <th align="center">Feedback Word Count</th>
+      <th align="center">Pay / Bonus / Reject</th>
+      <th align="center">Time Questions</th>
+      <!--<th align="center">Time Feedback</th>-->
+      <th align="center">Email</th>    
+    </tr>
+    <% surveys.reverse.each do |s| %>    
+      <tr style="<% if s.has_duplicate_questions? %>background-color:rgb(255, 150, 150);<% end %><% if s.expired_and_unstarted? %>color:rgb(200,200,200);<% elsif s.expired_and_uncompleted? %>color:rgb(100,100,100);<% end %>">
+        <td align="center" valign="center"><%= s.id %></td>
+        <td align="center" valign="center">
+          <span style="font-size:22px;"><%= s.created_at.strftime('%H').to_i %></span>
+          <span style="font-size:10px;"><%= s.created_at.strftime('%b %d') %></span>
+        </td>
+        <td align="center" valign="center"><%= s.version %></td>
+        <td align="center" valign="center"><%= link_to 'do', {:controller => :surveyor, :id => s.id}, {:target => '_blank'} %></td>
+        <td align="center" valign="center" style="font-size:6px;">
+          <%= link_to s.mturk_hit_id, "https://#{BasicMTurk::MTURK_DEV ? 'workersandbox' : 'www'}.mturk.com/mturk/preview?groupId=#{s.mturk_group_id}&hitId=#{s.mturk_hit_id}&externalHit=true&canAccept=true", :target => '_blank', :style => '' %>
+          <% if s.mturk_worker_id %><br /><%= s.mturk_worker_id %><% end %>
+          <% if s.mturk_assignment_id %><br /><%= s.mturk_assignment_id %><% end %>
+        </td>
+        <td align="center" valign="center" style="font-size:8px;"><%= s.age_gender_to_s %></td>
+        <td align="center" valign="center" style="font-size:8px;"><%= s.treatment_to_s %></td>
+        <td align="center" valign="center">
+          <%= (s.num_questions_completed.zero? and s.did_not_read_directions_yet?) ? nil : (link_to (s.completed? ? '*' : s.num_questions_completed), {:action => :investigate_survey, :id => s.id}, {:target => '_blank'}) %>
+        </td>
+        <td align="center" valign="center" style="font-size:8px;">
+          <%= case s.passed_imc?
+                when true then %Q|<span style="color:green;">PASS</span>|
+                when false then %Q|<span style="color:red;">FAILED</span>|
+                when nil then "N/A"
+              end %>
+        </td>
+        <td align="center" valign="center">
+          <%= s.browser_statuses.length / 2 unless s.browser_statuses.empty? %>
+        </td>
+        <!--<td align="center" valign="center"><%= "#{digits_round(s.calculate_average_ncs)} (#{digits_round(s.calculate_sd_ncs)})" %></td>-->
+        <td align="center" valign="center">
+          <% f1 = s.get_question_response('feedback_question') %>
+          <% f2 = s.get_question_response('kapcha_speed_question') %>
+          <% responses = (f1.nil? ? '' : (f1 == 0 ? '' : f1.to_s)) + (f2.nil? ? '' : (f2 == 0 ? '' : f2.to_s)) %>
+          <% num_words_feedback = responses.split(/\s/).length %>
+          <%= num_words_feedback if num_words_feedback > 0 %>
+        </td>
+        <td align="center" valign="center" style="font-size:8px;"><%= render :partial => 'pay_and_or_bonus_or_reject', :locals => {:s => s, :page => 'index'} %></td>
+        <td align="center" valign="center"><%= s.completed? ? convert_seconds_to_time(s.total_time_for_questions_in_sec) : 'N/A' %></td>
+        <!--<td align="center" valign="center"><%= s.completed? ? convert_seconds_to_time(s.total_time_for_feedback_in_sec) : 'N/A' %></td>-->
+        <td align="center" valign="center">
+          <% if s.mturk_worker_id %>
+            <input type="checkbox" worker_id="<%= s.mturk_worker_id %>" class="worker_send_checkbox" />
+          <% else %>
+            <input type="checkbox" disabled="true" />
+          <% end %>
+        </td>
+      </tr>  
+    <% end %>    
+  </table>
+</div>

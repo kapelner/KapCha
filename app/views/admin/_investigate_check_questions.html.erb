@@ -1,0 +1,45 @@
+<h3>Check Questions / Reject</h3>
+
+Check / True Squared Distance Score: <%= @s.calculated_check_true_squared_distance %> / 
+<%= '%.2f' % @s.calculate_check_true_squared_z_score %> / 
+<%= '%.2f' % @s.calculate_check_true_squared_p_val %><br />
+<% unless @s.paid? or @s.rejected? %>
+  <br />
+  <%= link_to 'accept this HIT', :action => :pay, :id => @s.id %><br />
+  <br />
+  <%= link_to 'reject this HIT', {:action => :reject, :id => @s.id}, {:confirm => 'Are you sure?'} %>
+<% end %>
+<table>
+  <tr>
+    <th></th>
+    <% ['sj', 'sp', 'nf', 'nt'].each do |type| %>
+      <% temperament = @s.sorted_temperament %>
+      <th class="title_<%= temperament.index(type) + 1 %>" align="center"><%= type %></th>
+    <% end %>
+  </tr>
+  <% true_responses = @s.true_responses_sorted %>
+  <% check_responses = @s.check_responses_sorted %>
+  <% SurveyQuestions::CheckQuestions.each_with_index do |q, i| %>
+    <% resp = true_responses[q][1][:types].split(',') %>
+    <tr>
+      <td><%= link_to "T#{q + 1}", 'javascript:void(0);', :onclick => %Q|alert("#{SurveyQuestions::TrueQuestions[q][:question]}...")| %></td>
+      <% ['sj', 'sp', 'nf', 'nt'].each do |type| %>
+        <td class="response_<%= resp.index(type) + 1 %>" align="center">
+          <%= SurveyQuestions::TrueQuestions[q][:answers][type] %>
+        </td>
+      <% end %>
+    </tr>
+    <% resp = check_responses[i][1][:types].split(',') %>
+    <tr>
+      <td><%= link_to "Q#{q + 1}", 'javascript:void(0);', :onclick => %Q|alert("#{SurveyQuestions::TrueQuestions[q][:question]}...")| %></td>
+      <% ['sj', 'sp', 'nf', 'nt'].each do |type| %>
+        <td class="response_<%= resp.index(type) + 1 %>" align="center">
+          <%= SurveyQuestions::TrueQuestions[q][:answers][type] %>
+        </td>
+      <% end %>
+    </tr> 
+    <tr>
+      <td colspan="5"><hr></hr</td>
+    </tr>   
+  <% end %>
+</table>

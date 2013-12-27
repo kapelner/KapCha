@@ -1,0 +1,44 @@
+<div style="overflow: hidden; width:100%; margin-left:40px;">
+  <% @q[:response_choices].each_with_index do |choice, i| %>
+    <div style="float:left; margin-right:10px; margin-bottom:5px; <%= 'display:none;' if @s.kapcha? && !Survey::QuestionTypesExemptFromKapCha.include?(@q[:question_type]) %>" class="kapcha_token">
+      <% rounded_div :radius => RoundedCorner::AlertRadius, :border_color => RoundedCorner::Red, :interior_color => RoundedCorner::White do %>
+        <div id="choice_<%= i %>" style="text-align:center; color:black; cursor:pointer;" onclick="ChoiceClicked(<%= i %>);"><%= choice %></div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+<br />
+<center>
+  <div 
+    style="text-align:center; width:100px; <%= 'display:none;' if @s.hide_controls_initially?(@q) %><% if @s.disable_continue_button_initially?(@q) %>color:gray;<% else %>color:black; cursor:pointer;<% end %>"
+    class="kapcha_control"
+    id="kapcha_submit_button"
+    <% unless @s.disable_continue_button_initially?(@q) %>onclick="SubmitSurvey();"><% end %>
+    <% rounded_div :radius => RoundedCorner::AlertRadius, :border_color => RoundedCorner::Grey, :interior_color => RoundedCorner::Red do %>
+      <%= @q[:submit_text] || Survey::DefaultSubmitText %>
+    <% end %>
+  </div>
+  <%= render :partial => 'surveyor_responses/kapcha_spinner_for_time' %>
+</center>
+
+<script type="text/javascript">
+  var responses = new Hash();
+
+  function ChoiceClicked(i){
+    var elem = $('choice_' + i);
+    var choice = elem.innerHTML;
+    if (responses.get(choice) == null){
+      responses.set(choice, true);
+      elem.style.backgroundColor = 'rgb(255, 255, 80)';
+    }
+    else {
+      responses.unset(choice);
+      elem.style.backgroundColor = 'rgb(255, 255, 255)';
+    }
+  }
+  
+  function SubmitSurvey(){
+    $('response_form_text').value = encodeURIComponent(responses.keys().join(response_delimeter));
+    $('response_form').submit();
+  }
+</script>

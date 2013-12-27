@@ -1,0 +1,33 @@
+<% maxlength = @q[:other_response_params] ? (@q[:other_response_params][:input_max_characters] || Survey::InputMaxCharactersDefault) : Survey::InputMaxCharactersDefault %>
+<span style="font-size:12px; <%= 'display:none;' if @s.hide_controls_initially?(@q) %>" class="kapcha_control"><%= @q[:other_response_params][:text_before_free_response] || '' if @q[:other_response_params] %></span><input type="text" maxlength="<%= maxlength %>" id="free_response" style="width:<%= maxlength * 10 %>px; <%= 'display:none;' if @s.hide_controls_initially?(@q) %>" class="kapcha_control" /><span style="font-size:12px; <%= 'display:none;' if @s.hide_controls_initially?(@q) %>" class="kapcha_control"><%= @q[:other_response_params][:text_after_free_response] || '' if @q[:other_response_params] %></span>
+<br />
+<span style="font-size:12px; <%= 'display:none;' if @s.hide_controls_initially?(@q) %>" class="kapcha_control"><%= @q[:other_response_params][:text_underneath_free_response] || '' if @q[:other_response_params] %></span>
+<br />
+<br />
+<br />
+<input
+  type="button"
+  value=" <%= @q[:submit_text] || Survey::DefaultSubmitText %> "
+  onclick="SubmitSurvey();"
+  class="kapcha_control"
+  id="kapcha_submit_button"
+  <% if @s.disable_continue_button_initially?(@q) %>disabled="true"<% end %>
+  style="<%= 'display:none;' if @s.hide_controls_initially?(@q) %>" />
+<%= render :partial => 'surveyor_responses/kapcha_spinner_for_time' %>
+  
+<script type="text/javascript">
+  function SubmitSurvey(){
+    $('response_form_text').value = encodeURIComponent($('free_response').value);
+    //make sure they answered the question
+    if ($('response_form_text').value == ''){
+      alert('You must fill in an answer.');
+    }
+    else {
+      $('response_form').submit();
+    }
+  }
+
+  Event.observe(window, 'load', function(){
+    $('free_response').focus();
+  });
+</script>

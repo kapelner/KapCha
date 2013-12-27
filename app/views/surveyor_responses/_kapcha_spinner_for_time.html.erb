@@ -1,0 +1,9 @@
+<% if @s.disable_continue_button_initially?(@q) %>
+  <br />
+  <div id="kapcha_submit_spinner" style="margin-top:5px; color:yellow; font-size:12px;">
+    Continue button not yet activated... <img src="/images/spinner.gif" width="20" height="20">
+  </div>
+  <div id="kapcha_can_continue" style="margin-top:13px; display:none; color:rgb(100,255,100); font-size:12px;">
+    Click "Continue" when you are finished.
+  </div>
+<% end %>

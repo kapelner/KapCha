@@ -1,0 +1,33 @@
+<center>
+  <table style="align:left;">
+    <% @q[:response_choices].each_with_index do |choice, i| %>
+      <tr>
+        <td valign="top"><input type="checkbox" value="<%= choice %>" id="choice_<%= i %>" name="response" class="kapcha_control" style="<%= 'display:none;' if @s.hide_controls_initially?(@q) %>" /></td>
+        <td><label for="choice_<%= i %>"><%= kapcha_tokenize(choice, @use_kapcha) %></label></td>
+      </tr>
+    <% end %>
+  </table>
+</center>
+<br />
+<input 
+  type="button"
+  value=" <%= @q[:submit_text] || Survey::DefaultSubmitText %> "
+  onclick="SubmitSurvey();"
+  class="kapcha_control"
+  id="kapcha_submit_button"
+  <% if @s.disable_continue_button_initially?(@q) %>disabled="true"<% end %>
+  style="<%= 'display:none;' if @s.hide_controls_initially?(@q) %>" />
+<%= render :partial => 'surveyor_responses/kapcha_spinner_for_time' %>
+  
+<script type="text/javascript">
+  function SubmitSurvey(){
+    var responses = [];
+    $$('input[type = checkbox]').each(function(checkbox){
+      if (checkbox.checked){
+        responses.push(checkbox.value);
+      }
+    });
+    $('response_form_text').value = encodeURIComponent(responses.join(response_delimeter));
+    $('response_form').submit();
+  }
+</script>

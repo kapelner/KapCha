@@ -1,0 +1,436 @@
+<%= render :partial => 'dashboard_header' %>
+
+<h3>Summary Statistics</h3>
+
+<table>
+  <tr>
+    <th></th>
+    <th colspan="4"><i>Median</i> Mean &plusmn; sd (n) <a name="x_bar_s_table"></a></th>
+  </tr>
+  <tr>
+    <th></th>
+    <th align="center">Control</th>
+    <th align="center">Exhortation</th>
+    <th align="center">Timing</th>
+    <th align="center">Kapcha</th>
+    <th align="center">Overall</th>
+  </tr>
+  <tr>
+    <th align="right">Q1-Fancy</th>
+    <% q1_fancies = [@controls_fancy, @exhortations_fancy, @timings_fancy, @kapchas_fancy, @all_fancy] %>
+    <% q1_fancies.each do |arr| %>
+      <% arr = arr.reject{|s| r = s.get_question_response('beer_question_thaler_1985').to_f; r > 9.99 or r < 0} %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('beer_question_thaler_1985').to_f} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Q1-Run Down</th>
+    <% q1_rundowns = [@controls_rundown, @exhortations_rundown, @timings_rundown, @kapchas_rundown, @all_rundown] %>
+    <% q1_rundowns.each do |arr| %>
+      <% arr = arr.reject{|s| r = s.get_question_response('beer_question_thaler_1985').to_f; r > 9.99 or r < 0} %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('beer_question_thaler_1985').to_f} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Compare</th>
+    <% combine_two_collections(q1_fancies, q1_rundowns).each do |pair| %>
+      <% samp_1 = pair.first.map{|s| s.get_question_response('beer_question_thaler_1985').to_f}.reject{|r| r > 9.99 or r < 0} %>
+      <% samp_2 = pair.last.map{|s| s.get_question_response('beer_question_thaler_1985').to_f}.reject{|r| r > 9.99 or r < 0} %>
+      <%= render :partial => 'display_t_and_p_value_and_power', :locals => {:samp_1 => samp_1, :samp_2 => samp_2} %>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Q2-Paid</th>
+    <% q2_paids = [@controls_paid, @exhortations_paid, @timings_paid, @kapchas_paid, @all_paid] %>
+    <% q2_paids.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Q2-Free</th>
+    <% q2_frees = [@controls_free, @exhortations_free, @timings_free, @kapchas_free, @all_free] %>
+    <% q2_frees.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Compare</th>
+    <% combine_two_collections(q2_paids, q2_frees).each do |pair| %>
+      <% samp_1 = pair.first.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <% samp_2 = pair.last.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <%= render :partial => 'display_t_and_p_value_and_power', :locals => {:samp_1 => samp_1, :samp_2 => samp_2} %>
+    <% end %>
+  </tr>
+  <% columns = [@controls, @exhortations, @timings, @kapchas, @surveys_completed] %>
+  <tr>
+    <th align="right">% pass IMC</th>
+    <% columns.each do |arr| %>
+      <td align="center"><%= pct(arr.select{|s| s.passed_imc?}.length, arr.length) %></td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Motivation</th>
+    <% columns.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('motivation_gauge_oppenheimer_2009')} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Time Questions</th>
+    <% columns.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.total_time_for_questions_in_sec} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Time Feedback</th>
+    <% columns.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.total_time_for_feedback_in_sec} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">n's<br />of total n (% attrition)</th>
+    <td align="center"><span style="font-size:24px; font-weight:bold;"><%= @controls.length %></span><br /> of <%= @controls.length + @controls_abandoned.length %> (<%= pct(@controls_abandoned.length, @controls.length + @controls_abandoned.length) %>)</td>
+    <td align="center"><span style="font-size:24px; font-weight:bold;"><%= @exhortations.length %></span><br /> of <%= @exhortations.length + @exhortations_abandoned.length %> (<%= pct(@exhortations_abandoned.length, @exhortations.length + @exhortations_abandoned.length) %>)</td>
+    <td align="center"><span style="font-size:24px; font-weight:bold;"><%= @timings.length %></span><br /> of <%= @timings.length + @timings_abandoned.length %> (<%= pct(@timings_abandoned.length, @timings.length + @timings_abandoned.length) %>)</td>
+    <td align="center"><span style="font-size:24px; font-weight:bold;"><%= @kapchas.length %></span><br /> of <%= @kapchas.length + @kapchas_abandoned.length %> (<%= pct(@kapchas_abandoned.length, @kapchas.length + @kapchas_abandoned.length) %>)</td>
+    <td align="center"><span style="font-size:24px; font-weight:bold;"><%= @surveys_completed.length %></span><br /> of <%= @surveys_completed.length + @surveys_abandoned.length %> (<%= pct(@surveys_abandoned.length, @surveys_completed.length + @surveys_abandoned.length) %>)</td>
+  </tr>
+</table>
+<br />
+<br />
+<table>
+  <tr>
+    <th colspan="5">Attrition Rates Compared Among Experimental Groups<a name="attrition_effects_table"></a></th>
+  </tr>
+  <tr>
+    <th></th>
+    <th>Control</th>
+    <th>Exhortation</th>
+    <th>Timing</th>
+    <th>Kapcha</th>
+  </tr>
+  <tr>
+    <th>Control</th>
+    <td></td>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @controls_abandoned.length,
+          :n_1 => @controls.length + @controls_abandoned.length,
+          :r_2 => @exhortations_abandoned.length,
+          :n_2 => @exhortations.length + @exhortations_abandoned.length} %>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @controls_abandoned.length,
+          :n_1 => @controls.length + @controls_abandoned.length,
+          :r_2 => @timings_abandoned.length,
+          :n_2 => @timings.length + @timings_abandoned.length} %>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @controls_abandoned.length,
+          :n_1 => @controls.length + @controls_abandoned.length,
+          :r_2 => @kapchas_abandoned.length,
+          :n_2 => @kapchas.length + @kapchas_abandoned.length} %>
+  </tr>
+  <tr>
+    <th>Exhortation</th>
+    <td></td>
+    <td></td>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @exhortations_abandoned.length,
+          :n_1 => @exhortations.length + @exhortations_abandoned.length,
+          :r_2 => @timings_abandoned.length,
+          :n_2 => @timings.length + @timings_abandoned.length} %>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @exhortations_abandoned.length,
+          :n_1 => @exhortations.length + @exhortations_abandoned.length,
+          :r_2 => @kapchas_abandoned.length,
+          :n_2 => @kapchas.length + @kapchas_abandoned.length} %>
+  </tr>
+  <tr>
+    <th>Timing</th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @timings_abandoned.length,
+          :n_1 => @timings.length + @timings_abandoned.length,
+          :r_2 => @kapchas_abandoned.length,
+          :n_2 => @kapchas.length + @kapchas_abandoned.length} %>
+  </tr>
+</table>
+<br />
+<br />
+<table>
+  <tr>
+    <th colspan="5">IMC Pass Rates Compared Among Experimental Groups<a name="imc_pass_rates_effects_table"></a></th>
+  </tr>
+  <tr>
+    <th></th>
+    <th>Control</th>
+    <th>Exhortation</th>
+    <th>Timing</th>
+    <th>Kapcha</th>
+  </tr>
+  <tr>
+    <th>Control</th>
+    <td></td>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @controls.select{|s| s.passed_imc?}.length,
+          :n_1 => @controls.length,
+          :r_2 => @exhortations.select{|s| s.passed_imc?}.length,
+          :n_2 => @exhortations.length} %>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @controls.select{|s| s.passed_imc?}.length,
+          :n_1 => @controls.length,
+          :r_2 => @timings.select{|s| s.passed_imc?}.length,
+          :n_2 => @timings.length} %>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @controls.select{|s| s.passed_imc?}.length,
+          :n_1 => @controls.length,
+          :r_2 => @kapchas.select{|s| s.passed_imc?}.length,
+          :n_2 => @kapchas.length} %>
+  </tr>
+  <tr>
+    <th>Exhortation</th>
+    <td></td>
+    <td></td>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @exhortations.select{|s| s.passed_imc?}.length,
+          :n_1 => @exhortations.length,
+          :r_2 => @timings.select{|s| s.passed_imc?}.length,
+          :n_2 => @timings.length} %>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @exhortations.select{|s| s.passed_imc?}.length,
+          :n_1 => @exhortations.length,
+          :r_2 => @kapchas.select{|s| s.passed_imc?}.length,
+          :n_2 => @kapchas.length} %>
+  </tr>
+  <tr>
+    <th>Timing</th>
+    <td></td>
+    <td></td>
+    <td></td>
+    <%= render :partial => 'display_z_and_p_value_and_power', :locals => {
+          :r_1 => @timings.select{|s| s.passed_imc?}.length,
+          :n_1 => @timings.length,
+          :r_2 => @kapchas.select{|s| s.passed_imc?}.length,
+          :n_2 => @kapchas.length} %>
+  </tr>
+</table>
+<br />
+<br />
+<h3>IMC Positive or Negative Influence</h3>
+<br />
+<table>
+  <tr>
+    <th></th>
+    <th colspan="4"><i>Median</i> Mean (sd)<a name="imc_plus_minus"></a></th>
+  </tr>
+  <tr>
+    <th></th>
+    <th align="center">Control</th>
+    <th align="center">Exhortation</th>
+    <th align="center">Timing</th>
+    <th align="center">Kapcha</th>
+    <th align="center">Overall</th>
+  </tr>
+  <tr>
+    <th align="right" style="color:green;">Q1-Fancy (only IMC+)</th>
+    <% fancys_passed_imcs = [@controls_fancy, @exhortations_fancy, @timings_fancy, @kapchas_fancy, @all_fancy].map{|arr| arr.select{|s| s.passed_imc?}} %>
+    <% fancys_passed_imcs.each do |arr| %>
+      <% arr = arr.reject{|s| r = s.get_question_response('beer_question_thaler_1985').to_f; r > 9.99 or r < 0} %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('beer_question_thaler_1985').to_f} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right" style="color:green;">Q1-Run Down (only IMC+)</th>
+    <% run_downs_passed_imcs = [@controls_rundown, @exhortations_rundown, @timings_rundown, @kapchas_rundown, @all_rundown].map{|arr| arr.select{|s| s.passed_imc?}} %>
+    <% run_downs_passed_imcs.each do |arr| %>
+      <% arr = arr.reject{|s| r = s.get_question_response('beer_question_thaler_1985').to_f; r > 9.99 or r < 0} %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('beer_question_thaler_1985').to_f} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Compare</th>
+    <% combine_two_collections(fancys_passed_imcs, run_downs_passed_imcs).each do |pair| %>
+      <% samp_1 = pair.first.map{|s| s.get_question_response('beer_question_thaler_1985').to_f}.reject{|r| r > 9.99 or r < 0} %>
+      <% samp_2 = pair.last.map{|s| s.get_question_response('beer_question_thaler_1985').to_f}.reject{|r| r > 9.99 or r < 0} %>
+      <%= render :partial => 'display_t_and_p_value_and_power', :locals => {:samp_1 => samp_1, :samp_2 => samp_2} %>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right" style="color:green;">Q2-Paid (only IMC+)</th>
+    <% paid_passed_imcs = [@controls_paid, @exhortations_paid, @timings_paid, @kapchas_paid, @all_paid].map{|arr| arr.select{|s| s.passed_imc?}} %>
+    <% paid_passed_imcs.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right" style="color:green;">Q2-Free (only IMC+)</th>
+    <% free_passed_imcs = [@controls_free, @exhortations_free, @timings_free, @kapchas_free, @all_free].map{|arr| arr.select{|s| s.passed_imc?}} %>
+    <% free_passed_imcs.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Compare</th>
+    <% combine_two_collections(paid_passed_imcs, free_passed_imcs).each do |pair| %>
+      <% samp_1 = pair.first.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <% samp_2 = pair.last.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <%= render :partial => 'display_t_and_p_value_and_power', :locals => {:samp_1 => samp_1, :samp_2 => samp_2} %>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right" style="color:red;">Q1-Fancy (only IMC-)</th>
+    <% fancys_passed_imc = [@controls_fancy, @exhortations_fancy, @timings_fancy, @kapchas_fancy, @all_fancy].map{|arr| arr.select{|s| !s.passed_imc?}} %>
+    <% fancys_passed_imc.each do |arr| %>
+      <% arr = arr.reject{|s| r = s.get_question_response('beer_question_thaler_1985').to_f; r > 9.99 or r < 0} %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('beer_question_thaler_1985').to_f} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right" style="color:red;">Q1-Run Down (only IMC-)</th>
+    <% run_downs_failed_imc = [@controls_rundown, @exhortations_rundown, @timings_rundown, @kapchas_rundown, @all_rundown].map{|arr| arr.select{|s| !s.passed_imc?}} %>
+    <% run_downs_failed_imc.each do |arr| %>
+      <% arr = arr.reject{|s| r = s.get_question_response('beer_question_thaler_1985').to_f; r > 9.99 or r < 0} %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('beer_question_thaler_1985').to_f} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Compare</th>
+    <% combine_two_collections(fancys_passed_imc, run_downs_failed_imc).each do |pair| %>
+      <% samp_1 = pair.first.map{|s| s.get_question_response('beer_question_thaler_1985').to_f}.reject{|r| r > 9.99 or r < 0} %>
+      <% samp_2 = pair.last.map{|s| s.get_question_response('beer_question_thaler_1985').to_f}.reject{|r| r > 9.99 or r < 0} %>
+      <%= render :partial => 'display_t_and_p_value_and_power', :locals => {:samp_1 => samp_1, :samp_2 => samp_2} %>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right" style="color:red;">Q2-Paid (only IMC-)</th>
+    <% paids_failed_imc = [@controls_paid, @exhortations_paid, @timings_paid, @kapchas_paid, @all_paid].map{|arr| arr.select{|s| !s.passed_imc?}} %>
+    <% paids_failed_imc.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right" style="color:red;">Q2-Free (only IMC-)</th>
+    <% frees_failed_imc = [@controls_free, @exhortations_free, @timings_free, @kapchas_free, @all_free].map{|arr| arr.select{|s| !s.passed_imc?}} %>
+    <% frees_failed_imc.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Compare</th>
+    <% combine_two_collections(paids_failed_imc, frees_failed_imc).each do |pair| %>
+      <% samp_1 = pair.first.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <% samp_2 = pair.last.map{|s| s.get_question_response('football_question_thaler_1985')} %>
+      <%= render :partial => 'display_t_and_p_value_and_power', :locals => {:samp_1 => samp_1, :samp_2 => samp_2} %>
+    <% end %>
+  </tr>
+</table>
+
+<h3>Need for Cognition Differences</h3>
+
+<table>
+  <tr>
+    <th></th>
+    <th colspan="4"><i>Median</i> Mean &plusmn; sd<a name="nfc_imc"></a></th>
+  </tr>
+  <tr>
+    <th></th>
+    <th align="center">Control</th>
+    <th align="center">Exhortation</th>
+    <th align="center">Timing</th>
+    <th align="center">Kapcha</th>
+    <th align="center">Overall</th>
+  </tr>
+  <tr>
+    <th align="right" style="color:green;">IMC+</th>
+    <% passed_imcs = columns.map{|arr| arr.select{|s| s.passed_imc?}} %>
+    <% passed_imcs.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.calculate_average_ncs} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right" style="color:red;">IMC-</th>
+    <% failed_imcs = columns.map{|arr| arr.select{|s| !s.passed_imc?}} %>
+    <% failed_imcs.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.calculate_average_ncs} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Compare</th>
+    <% combine_two_collections(passed_imcs, failed_imcs).each do |pair| %>
+      <% samp_1 = pair.first.map{|s| s.calculate_average_ncs} %>
+      <% samp_2 = pair.last.map{|s| s.calculate_average_ncs} %>
+      <%= render :partial => 'display_t_and_p_value_and_power', :locals => {:samp_1 => samp_1, :samp_2 => samp_2} %>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Overall</th>
+    <% columns.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.calculate_average_ncs} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+  <tr>
+    <th align="right">Overall sd</th>
+    <% columns.each do |arr| %>
+      <% survey_ids = arr.map{|s| s.id} %>
+      <% data = arr.map{|s| s.calculate_sd_ncs} %>
+      <% data_with_id_links = data.map_with_index{|n, i| link_to(n, {:action => :investigate_survey, :id => survey_ids[i]}, {:target => '_blank'})} %>
+      <td align="center"><%= link_to median_mean_sd_rounded(data), 'javascript:void(0);', :onclick => "$('data_display').update('(#{data_with_id_links.join(', ')})'); ShowHistogram([#{data.join(',')}]);" %> (n = <%= arr.length %>)</td>
+    <% end %>
+  </tr>
+</table>
+
+<%= render :partial => 'raw_data_and_histogram_support' %>
+<br />
